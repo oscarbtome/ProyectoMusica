@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -37,12 +38,15 @@ public class MainActivity extends AppCompatActivity implements Response.ErrorLis
         etNombreUsuario = (EditText)findViewById(R.id.etNombreUsuario);
         etPassword = (EditText)findViewById(R.id.etPassword);
         cbRegistrar = (CheckBox)findViewById(R.id.cbRegistrar);
-        ctx = getApplicationContext();
-        url = "http://192.168.0.17/proyectoAndroid/Login.php?comprobarLogin&username=Pedro1&password=1234";
-        objetoJson = new JsonObjectRequest(Request.Method.GET, url, null,this,this);
         cola = Volley.newRequestQueue(getApplicationContext());
-        cola.add(objetoJson);
+    }
 
+
+
+    public void click(View view){
+        url = String.format("http://192.168.0.17/proyectoAndroid/Login.php?comprobarLogin&nombreUsuario=%s&password=%s", etNombreUsuario.getText().toString(), etPassword.getText().toString());
+        objetoJson = new JsonObjectRequest(Request.Method.GET, url, null,this,this);
+        cola.add(objetoJson);
     }
 
     @Override
