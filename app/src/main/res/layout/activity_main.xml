@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:backgroundTint="@color/colorPrimary"
         android:ems="10"
-        android:hint="Usuario"
+        android:hint="Usuario o E-mail"
         android:inputType="textPersonName" />
 
     <EditText
@@ -32,19 +32,30 @@
         android:hint="Password"
         android:inputType="textPassword" />
 
+    <EditText
+        android:id="@+id/etEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/colorPrimary"
+        android:ems="10"
+        android:hint="E-Mail"
+        android:inputType="textEmailAddress"
+        tools:visibility="gone" />
+
     <CheckBox
         android:id="@+id/cbRegistrar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:onClick="listenerRegistrar"
         android:text="Registrar" />
 
     <Button
-        android:id="@+id/btnConfirmar"
+        android:id="@+id/btnAccion"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/button_rounded"
-        android:onClick="click"
-        android:text="Confirmar" />
+        android:onClick="btnClick"
+        android:text="Entrar" />
 
     <LinearLayout
         android:layout_width="match_parent"
