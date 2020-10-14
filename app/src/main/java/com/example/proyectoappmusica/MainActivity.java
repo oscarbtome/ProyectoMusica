@@ -63,18 +63,15 @@ public class MainActivity extends AppCompatActivity implements Response.ErrorLis
 
 
     public void btnClick(View view){
-        btnAccion.setEnabled(false);
-        etNombreUsuario.setEnabled(false);
-        etPassword.setEnabled(false);
-        etEmail.setEnabled(false);
         if(etNombreUsuario.getText().toString().trim().length() > 0 && etPassword.getText().toString().trim().length() > 0){
             if(cbRegistrar.isChecked()){
                 if(etEmail.getText().toString().trim().length() > 0){
-                    //REGISTRAR USUARIO
-                    url = String.format("http://192.168.0.17/proyectoAndroid/Login.php?comprobarLogin&nombreUsuario=%s&password=%s", etNombreUsuario.getText().toString(), etPassword.getText().toString());
-                    operacion = "REGISTRAR";
+                    //COMPROBAR USUARIO
+                    url = String.format("http://192.168.0.17/proyectoAndroid/Login.php?existeUsuario&nombreUsuario=%s", etNombreUsuario.getText().toString());
+                    operacion = "COMPROBAR_USUARIO";
                     objetoJson = new JsonObjectRequest(Request.Method.GET, url, null,this,this);
                     cola.add(objetoJson);
+                    desactivarWidgets();
                 }
                 else{
                     Toast.makeText(getApplicationContext(), "[Error]: rellena el campo email.", Toast.LENGTH_LONG).show();
@@ -82,15 +79,30 @@ public class MainActivity extends AppCompatActivity implements Response.ErrorLis
             }
             else{
                 //ACCEDER USUARIO
-                url = String.format("http://192.168.0.17/proyectoAndroid/Login.php?comprobarLogin&nombreUsuario=%s&password=%s", etNombreUsuario.getText().toString(), etPassword.getText().toString());
+                url = String.format("http://192.168.0.17/proyectoAndroid/Login.php?existeUsuario&nombreUsuario=%s", etNombreUsuario.getText().toString(), etPassword.getText().toString());
                 operacion = "ACCEDER";
                 objetoJson = new JsonObjectRequest(Request.Method.GET, url, null,this,this);
                 cola.add(objetoJson);
+                desactivarWidgets();
             }
         }
         else{
             Toast.makeText(getApplicationContext(), "[Error]: rellena todos los campos", Toast.LENGTH_LONG).show();
         }
+    }
+
+    private void activarWidgets(){
+        btnAccion.setEnabled(true);
+        etNombreUsuario.setEnabled(true);
+        etPassword.setEnabled(true);
+        etEmail.setEnabled(true);
+    }
+
+    private void desactivarWidgets(){
+        btnAccion.setEnabled(false);
+        etNombreUsuario.setEnabled(false);
+        etPassword.setEnabled(false);
+        etEmail.setEnabled(false);
     }
 
     @Override
@@ -103,37 +115,58 @@ public class MainActivity extends AppCompatActivity implements Response.ErrorLis
                 objetoJson = arrayJson.getJSONObject(0);
                 if(operacion.equals("ACCEDER")){
                     String nombreUsuario = objetoJson.optString("nombreUsuario");
-                    String email = objetoJson.optString("emailUsuario");
-                    String password = objetoJson.optString("password");
-                    if(password.equals(etPassword.getText().toString()) && (nombreUsuario.equals(etNombreUsuario.getText().toString()) || email.equals(etNombreUsuario.getText().toString()))){
+                    String emailUsuario = objetoJson.optString("emailUsuario");
+                    if(nombreUsuario.equals(etNombreUsuario.getText().toString()) || emailUsuario.equals(etNombreUsuario.getText().toString())){
                         Toast.makeText(getApplicationContext(), "Usuario logueado", Toast.LENGTH_SHORT).show();
                     }
                     else{
-                        Toast.makeText(getApplicationContext(), "Usuario o contraseña incorrectas", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Usuario, e-mail o contraseña incorrectas", Toast.LENGTH_SHORT).show();
                     }
+                    activarWidgets();
                 }
-                else if(operacion.equals("REGISTRAR")){
+                else if(operacion.equals("COMPROBAR_USUARIO")){
+                    System.out.println("ENTRA COMPROBARRRRRRRRRRRRRR");
+                    String nombreUsuario = objetoJson.optString("nombreUsuario");
+                    String emailUsuario = objetoJson.optString("emailUsuario");
+                    if(!nombreUsuario.equals(etNombreUsuario.getText().toString()) && !emailUsuario.equals(etNombreUsuario.getText().toString())){
+                        System.out.println("ENTRAAAAAAAA INSERTAR");
+                        url = String.format("http://192.168.0.17/proyectoAndroid/Login.php?insertarUsuario&nombreUsuario=%s&password=%s&emailUsuario=%s", etNombreUsuario.getText().toString(), etPassword.getText().toString(), etEmail.getText().toString());
+                        System.out.println(url);
+                        operacion = "REGISTRAR";
+                        JsonObjectRequest objetoJson2 = new JsonObjectRequest(Request.Method.GET, url, null,this,this);
+                        cola.add(objetoJson2);
+                    }
+                    else{
+                        Toast.makeText(getApplicationContext(), "[Error]: el usuario ya existe.", Toast.LENGTH_SHORT).show();
+                        activarWidgets();
+                    }
                     Toast.makeText(getApplicationContext(), "REGISTRAR", Toast.LENGTH_SHORT).show();
                 }
-
-
+                else if(operacion.equals("REGISTRAR")){
+                    String resultado = objetoJson.optString("respuesta");
+                    if(resultado.equals("OK")){
+                        Toast.makeText(getApplicationContext(), "USUARIO REGISTRADO CON EXITO", Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        Toast.makeText(getApplicationContext(), "[Error]: no se pudo registrar el usuario.", Toast.LENGTH_SHORT).show();
+                    }
+                }
             } catch (JSONException e) {
                 Toast.makeText(getApplicationContext(), "[Error]: " +e.getMessage(), Toast.LENGTH_SHORT).show();
+                activarWidgets();
             }
         }
         else{
             Toast.makeText(getApplicationContext(), "[Error]: usuario o contraseña incorrecto", Toast.LENGTH_SHORT).show();
+            activarWidgets();
         }
-        btnAccion.setEnabled(true);
-        etNombreUsuario.setEnabled(true);
-        etPassword.setEnabled(true);
-        etEmail.setEnabled(true);
 
     }
 
 
     @Override
     public void onErrorResponse(VolleyError error) {
+        activarWidgets();
         Toast.makeText(getApplicationContext(), "[Error]: " + error.toString(), Toast.LENGTH_LONG).show();
     }
 }
