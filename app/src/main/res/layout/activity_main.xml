@@ -29,7 +29,16 @@
         android:layout_height="wrap_content"
         android:backgroundTint="@color/colorPrimary"
         android:ems="10"
-        android:hint="Password"
+        android:hint="Introduce password"
+        android:inputType="textPassword" />
+
+    <EditText
+        android:id="@+id/etPasswordRep"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/colorPrimary"
+        android:ems="10"
+        android:hint="Introduce password de nuevo"
         android:inputType="textPassword" />
 
     <EditText
@@ -41,6 +50,13 @@
         android:hint="E-Mail"
         android:inputType="textEmailAddress"
         tools:visibility="gone" />
+
+    <CheckBox
+        android:id="@+id/cbUltimoLogin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="listenerRecordarUsuario"
+        android:text="Recordar usuario" />
 
     <CheckBox
         android:id="@+id/cbRegistrar"
@@ -83,7 +99,7 @@
 
         <LinearLayout
             android:layout_width="165dp"
-            android:layout_height="match_parent"
+            android:layout_height="75dp"
             android:orientation="vertical">
 
             <ImageButton
@@ -97,8 +113,8 @@
 
         <LinearLayout
             android:layout_width="165dp"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:layout_height="75dp"
+            android:orientation="vertical">
 
             <ImageButton
                 android:id="@+id/imageButton3"

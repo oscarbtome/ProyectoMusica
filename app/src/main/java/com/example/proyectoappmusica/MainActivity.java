@@ -1,9 +1,13 @@
 package com.example.proyectoappmusica;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -25,148 +29,185 @@ public class MainActivity extends AppCompatActivity implements Response.ErrorLis
 
     private EditText etNombreUsuario;
     private EditText etPassword;
+    private EditText etPasswordRep;
     private EditText etEmail;
+    private CheckBox cbUltimoLogin;
     private CheckBox cbRegistrar;
+    private Button btnAccion;
     private String url;
     private JsonObjectRequest objetoJson;
-    private Button btnAccion;
     private RequestQueue cola;
     private String operacion;
+    private MD5Encrypt md5Encrypt = new MD5Encrypt();
+    private SharedPreferences sharedPreferences;
+    private SharedPreferences.Editor sEditor;
+    private SessionUserData sessionUserData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         etNombreUsuario = (EditText)findViewById(R.id.etNombreUsuario);
         etPassword = (EditText)findViewById(R.id.etPassword);
+        etPasswordRep = (EditText)findViewById(R.id.etPasswordRep);
+        etPasswordRep.setVisibility(View.GONE);
         etEmail = (EditText)findViewById(R.id.etEmail) ;
         etEmail.setVisibility(View.GONE);
+        cbUltimoLogin = (CheckBox)findViewById(R.id.cbUltimoLogin);
         cbRegistrar = (CheckBox)findViewById(R.id.cbRegistrar);
         btnAccion = (Button)findViewById(R.id.btnAccion);
         cola = Volley.newRequestQueue(getApplicationContext());
+        sharedPreferences = getSharedPreferences("properties", MODE_PRIVATE);
+        sEditor = sharedPreferences.edit();
+        if(sharedPreferences.getBoolean("ultimoLoginMarca", false)){
+            cbUltimoLogin.setChecked(true);
+            etNombreUsuario.setText(sharedPreferences.getString("ultimoLoginTexto", ""));
+        }
+    }
+
+
+    public void listenerRecordarUsuario(View view){
+        sEditor.putBoolean("ultimoLoginMarca", cbUltimoLogin.isChecked());
+        sEditor.commit();
     }
 
 
     public void listenerRegistrar(View view){
         if(cbRegistrar.isChecked()){
             etEmail.setVisibility(View.VISIBLE);
-            etNombreUsuario.setHint("Usuario");
+            etPasswordRep.setVisibility(View.VISIBLE);
+            etNombreUsuario.setHint("Introduce nombre de usuario");
             btnAccion.setText("REGISTRAR");
+            cbUltimoLogin.setVisibility(View.GONE);
         }
         else {
             etEmail.setVisibility(View.GONE);
-            etNombreUsuario.setHint("Usuario o E-Mail");
+            etEmail.setText("");
+            etPasswordRep.setVisibility(View.GONE);
+            etPasswordRep.setText("");
+            etNombreUsuario.setHint("Introduce usuario o E-mail");
             btnAccion.setText("ENTRAR");
+            cbUltimoLogin.setVisibility(View.VISIBLE);
         }
     }
 
 
     public void btnClick(View view){
-        if(etNombreUsuario.getText().toString().trim().length() > 0 && etPassword.getText().toString().trim().length() > 0){
-            if(cbRegistrar.isChecked()){
-                if(etEmail.getText().toString().trim().length() > 0){
-                    //COMPROBAR USUARIO
-                    url = String.format("http://192.168.0.17/proyectoAndroid/Login.php?existeUsuario&nombreUsuario=%s", etNombreUsuario.getText().toString());
-                    operacion = "COMPROBAR_USUARIO";
-                    objetoJson = new JsonObjectRequest(Request.Method.GET, url, null,this,this);
-                    cola.add(objetoJson);
-                    desactivarWidgets();
-                }
-                else{
-                    Toast.makeText(getApplicationContext(), "[Error]: rellena el campo email.", Toast.LENGTH_LONG).show();
+        if(etNombreUsuario.getText().toString().trim().length() > 0){
+            if(cbUltimoLogin.isChecked()){ //Borrar ultimo nombre de usuario sera valido o no el nombre actual
+                sEditor.putString("ultimoLoginTexto", etNombreUsuario.getText().toString());
+            }
+            else{
+                sEditor.putString("ultimoLoginTexto", "");
+            }
+            sEditor.commit(); //Guardar cambios en SharedPreferences
+            if(etPassword.getText().toString().trim().length() > 0) {
+                try {
+                    if (cbRegistrar.isChecked()) {
+                        if (etPasswordRep.getText().toString().trim().length() > 0) {
+                            if (etPassword.getText().toString().equals(etPasswordRep.getText().toString())) {
+                                if(etEmail.getText().toString().trim().length() > 0) {
+                                    //REGISTRAR USUARIO
+                                    operacion = "REGISTRAR";
+                                    addJson(String.format("http://192.168.0.17/proyectoAndroid/Login.php?registrarUsuario&nombreUsuario=%s&password=%s&emailUsuario=%s", etNombreUsuario.getText().toString(), md5Encrypt.generator(etPassword.getText().toString()), etEmail.getText().toString()));
+                                }
+                                else{
+                                    Toast.makeText(getApplicationContext(), "[Error]: rellena el campo email.", Toast.LENGTH_LONG).show();
+                                }
+                            } else {
+                                Toast.makeText(getApplicationContext(), "[Error]: las contraseñas no coinciden.", Toast.LENGTH_LONG).show();
+                            }
+                        } else {
+                            Toast.makeText(getApplicationContext(), "[Error]: rellena el campo repetir contraseña.", Toast.LENGTH_LONG).show();
+                        }
+                    } else {
+                        //ACCEDER USUARIO
+                        operacion = "ACCEDER";
+                        addJson(String.format("http://192.168.0.17/proyectoAndroid/Login.php?comprobarLogin&nombreUsuario=%s&password=%s", etNombreUsuario.getText().toString(), md5Encrypt.generator(etPassword.getText().toString())));
+                    }
+                } catch (Exception e) {
+                    Toast.makeText(getApplicationContext(), "[Error]: no se pudo hasear la contraseña", Toast.LENGTH_LONG).show();
                 }
             }
             else{
-                //ACCEDER USUARIO
-                url = String.format("http://192.168.0.17/proyectoAndroid/Login.php?existeUsuario&nombreUsuario=%s", etNombreUsuario.getText().toString(), etPassword.getText().toString());
-                operacion = "ACCEDER";
-                objetoJson = new JsonObjectRequest(Request.Method.GET, url, null,this,this);
-                cola.add(objetoJson);
-                desactivarWidgets();
+                Toast.makeText(getApplicationContext(), "[Error]: rellena el campo contraseña", Toast.LENGTH_LONG).show();
             }
         }
         else{
-            Toast.makeText(getApplicationContext(), "[Error]: rellena todos los campos", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "[Error]: rellena el campo usuario", Toast.LENGTH_LONG).show();
         }
     }
 
-    private void activarWidgets(){
+
+    private void addJson(String url){
+        objetoJson = new JsonObjectRequest(Request.Method.GET, url, null,this,this);
+        cola.add(objetoJson);
+        disableWidgets();
+    }
+
+    private void enableWidgets(){
         btnAccion.setEnabled(true);
         etNombreUsuario.setEnabled(true);
         etPassword.setEnabled(true);
+        etPasswordRep.setEnabled(true);
         etEmail.setEnabled(true);
     }
 
-    private void desactivarWidgets(){
+    private void disableWidgets(){
         btnAccion.setEnabled(false);
         etNombreUsuario.setEnabled(false);
         etPassword.setEnabled(false);
+        etPasswordRep.setEnabled(false);
         etEmail.setEnabled(false);
     }
 
+
     @Override
     public void onResponse(JSONObject response) {
-        JSONArray arrayJson = response.optJSONArray("datosLogin");
-        JSONObject objetoJson = null;
-
-        if(arrayJson.length()>0) {
-            try {
+        try {
+            JSONArray arrayJson = response.optJSONArray("datos");
+            JSONObject objetoJson = null;
+            if (arrayJson.length() > 0) {
                 objetoJson = arrayJson.getJSONObject(0);
-                if(operacion.equals("ACCEDER")){
-                    String nombreUsuario = objetoJson.optString("nombreUsuario");
-                    String emailUsuario = objetoJson.optString("emailUsuario");
-                    if(nombreUsuario.equals(etNombreUsuario.getText().toString()) || emailUsuario.equals(etNombreUsuario.getText().toString())){
-                        Toast.makeText(getApplicationContext(), "Usuario logueado", Toast.LENGTH_SHORT).show();
+                String resultado = objetoJson.optString("resultado");
+                if (resultado.equals("TRUE")) {
+                    if (operacion.equals("ACCEDER")) {
+                        try {
+                            sessionUserData = new SessionUserData(etNombreUsuario.getText().toString(), md5Encrypt.generator(etPassword.getText().toString()));
+                            Intent intent = new Intent(getApplicationContext(), UserMain.class);
+                            intent.putExtra("userSession", sessionUserData);
+                            startActivityForResult(intent, 0);
+                        } catch (Exception e) {
+                            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    } else { //Mostrar mensaje de usuario registrado
+                        Toast.makeText(getApplicationContext(), "Usuario registrado", Toast.LENGTH_SHORT).show();
                     }
-                    else{
-                        Toast.makeText(getApplicationContext(), "Usuario, e-mail o contraseña incorrectas", Toast.LENGTH_SHORT).show();
-                    }
-                    activarWidgets();
+                } else {
+                    Toast.makeText(getApplicationContext(), resultado, Toast.LENGTH_SHORT).show();
                 }
-                else if(operacion.equals("COMPROBAR_USUARIO")){
-                    System.out.println("ENTRA COMPROBARRRRRRRRRRRRRR");
-                    String nombreUsuario = objetoJson.optString("nombreUsuario");
-                    String emailUsuario = objetoJson.optString("emailUsuario");
-                    if(!nombreUsuario.equals(etNombreUsuario.getText().toString()) && !emailUsuario.equals(etNombreUsuario.getText().toString())){
-                        System.out.println("ENTRAAAAAAAA INSERTAR");
-                        url = String.format("http://192.168.0.17/proyectoAndroid/Login.php?insertarUsuario&nombreUsuario=%s&password=%s&emailUsuario=%s", etNombreUsuario.getText().toString(), etPassword.getText().toString(), etEmail.getText().toString());
-                        System.out.println(url);
-                        operacion = "REGISTRAR";
-                        JsonObjectRequest objetoJson2 = new JsonObjectRequest(Request.Method.GET, url, null,this,this);
-                        cola.add(objetoJson2);
-                    }
-                    else{
-                        Toast.makeText(getApplicationContext(), "[Error]: el usuario ya existe.", Toast.LENGTH_SHORT).show();
-                        activarWidgets();
-                    }
-                    Toast.makeText(getApplicationContext(), "REGISTRAR", Toast.LENGTH_SHORT).show();
-                }
-                else if(operacion.equals("REGISTRAR")){
-                    String resultado = objetoJson.optString("respuesta");
-                    if(resultado.equals("OK")){
-                        Toast.makeText(getApplicationContext(), "USUARIO REGISTRADO CON EXITO", Toast.LENGTH_SHORT).show();
-                    }
-                    else{
-                        Toast.makeText(getApplicationContext(), "[Error]: no se pudo registrar el usuario.", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            } catch (JSONException e) {
-                Toast.makeText(getApplicationContext(), "[Error]: " +e.getMessage(), Toast.LENGTH_SHORT).show();
-                activarWidgets();
+            } else {
+                Toast.makeText(getApplicationContext(), "[Error]: no hubo respuesta de la BBDD.", Toast.LENGTH_SHORT).show();
             }
         }
-        else{
-            Toast.makeText(getApplicationContext(), "[Error]: usuario o contraseña incorrecto", Toast.LENGTH_SHORT).show();
-            activarWidgets();
+        catch (JSONException e) {
+            Toast.makeText(getApplicationContext(), "[Error]: " +e.getMessage(), Toast.LENGTH_SHORT).show();
         }
-
+        finally {
+            enableWidgets();
+        }
     }
-
 
     @Override
     public void onErrorResponse(VolleyError error) {
-        activarWidgets();
+        enableWidgets();
         Toast.makeText(getApplicationContext(), "[Error]: " + error.toString(), Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        etPassword.setText(""); //Limpiar campo contraseña
+        sessionUserData = null; //Limpiar datos de sesion anterior
     }
 }

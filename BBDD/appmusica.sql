@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 14-10-2020 a las 17:54:02
+-- Tiempo de generación: 15-10-2020 a las 19:48:03
 -- Versión del servidor: 10.4.14-MariaDB
 -- Versión de PHP: 7.2.33
 
@@ -46,7 +46,7 @@ CREATE TABLE `usuarios` (
   `idUsuario` int(11) NOT NULL,
   `nombreUsuario` varchar(20) NOT NULL,
   `emailUsuario` varchar(50) NOT NULL,
-  `password` varchar(15) NOT NULL
+  `password` varchar(200) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -79,7 +79,7 @@ ALTER TABLE `canciones`
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `idUsuario` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `idUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
