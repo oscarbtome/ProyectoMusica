@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#202732"
+    tools:context=".menuUsuario">
+
+    <ImageView
+        android:id="@+id/ivMenuUsuario"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        app:srcCompat="@drawable/laser" />
+
+    <TextView
+        android:id="@+id/tvCabecera"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-black"
+        android:text="   CHOOSE YOUR WAY ... CHOOSE YOUR OPTION"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="#B7B8BA" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:orientation="horizontal"></LinearLayout>
+
+    <Button
+        android:id="@+id/btnInsertarCancion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_rounded"
+        android:onClick="insertar"
+        android:text="Insertar Cancion" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:orientation="horizontal"></LinearLayout>
+
+    <Button
+        android:id="@+id/btnModificarCancion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_rounded"
+        android:onClick="modificar"
+        android:text="Modificar Cancion" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:orientation="horizontal"></LinearLayout>
+
+    <Button
+        android:id="@+id/btnMisCanciones"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_rounded"
+        android:onClick="listaPropia"
+        android:text="Mis Canciones" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:orientation="horizontal"></LinearLayout>
+
+    <Button
+        android:id="@+id/btnListaCanciones"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_rounded"
+        android:onClick="listaGeneral"
+        android:text="Lista de Canciones" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:orientation="horizontal"></LinearLayout>
+
+    <Button
+        android:id="@+id/btnModificarContrasenia"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_rounded"
+        android:text="Modificar Contraseña" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:orientation="horizontal"></LinearLayout>
+
+    <Button
+        android:id="@+id/btnBorrarUsuario"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_rounded"
+        android:text="Borrar Usuario" />
+</LinearLayout>

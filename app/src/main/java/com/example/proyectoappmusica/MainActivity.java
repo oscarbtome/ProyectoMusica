@@ -3,11 +3,9 @@ package com.example.proyectoappmusica;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -34,7 +32,6 @@ public class MainActivity extends AppCompatActivity implements Response.ErrorLis
     private CheckBox cbUltimoLogin;
     private CheckBox cbRegistrar;
     private Button btnAccion;
-    private String url;
     private JsonObjectRequest objetoJson;
     private RequestQueue cola;
     private String operacion;
@@ -174,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements Response.ErrorLis
                     if (operacion.equals("ACCEDER")) {
                         try {
                             sessionUserData = new SessionUserData(etNombreUsuario.getText().toString(), md5Encrypt.generator(etPassword.getText().toString()));
-                            Intent intent = new Intent(getApplicationContext(), UserMain.class);
+                            Intent intent = new Intent(getApplicationContext(), menuUsuario.class);
                             intent.putExtra("userSession", sessionUserData);
                             startActivityForResult(intent, 0);
                         } catch (Exception e) {

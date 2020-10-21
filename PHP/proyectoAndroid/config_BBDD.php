@@ -4,6 +4,6 @@
  */
 define("HOSTNAME", "localhost");
 define("DATABASE", "appmusica"); 
-define("USERNAME", "usuarioApp"); 
+define("USERNAME", "root"); 
 define("PASSWORD", ""); 
 ?>

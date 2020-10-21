@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#202732"
+    tools:context=".insertarCancion">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="305dp"
+        app:srcCompat="@drawable/music" />
+
+    <EditText
+        android:id="@+id/etTituloCancion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Título "
+        android:backgroundTint="@color/colorPrimary"
+        android:inputType="textPersonName" />
+
+    <EditText
+        android:id="@+id/etAutorCancion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Autor"
+        android:backgroundTint="@color/colorPrimary"
+        android:inputType="textPersonName" />
+
+    <EditText
+        android:id="@+id/etDuracion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Duracion"
+        android:backgroundTint="@color/colorPrimary"
+        android:inputType="textPersonName" />
+
+    <EditText
+        android:id="@+id/etEnlace"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/colorPrimary"
+        android:ems="10"
+        android:hint="Enlace"
+        android:inputType="textPersonName" />
+
+    <Button
+        android:id="@+id/btnInsertar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_rounded"
+        android:onClick="operacion"
+        android:text="INSERTAR CANCIÓN" />
+</LinearLayout>
