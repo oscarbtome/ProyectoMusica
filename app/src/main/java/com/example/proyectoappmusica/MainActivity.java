@@ -120,6 +120,7 @@ public class MainActivity extends AppCompatActivity implements Response.ErrorLis
                     } else {
                         //ACCEDER USUARIO
                         operacion = "ACCEDER";
+                        System.out.println(String.format("http://192.168.0.17/proyectoAndroid/Login.php?comprobarLogin&nombreUsuario=%s&password=%s", etNombreUsuario.getText().toString(), md5Encrypt.generator(etPassword.getText().toString())));
                         addJson(String.format("http://192.168.0.17/proyectoAndroid/Login.php?comprobarLogin&nombreUsuario=%s&password=%s", etNombreUsuario.getText().toString(), md5Encrypt.generator(etPassword.getText().toString())));
                     }
                 } catch (Exception e) {
@@ -204,6 +205,9 @@ public class MainActivity extends AppCompatActivity implements Response.ErrorLis
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == RESULT_OK){
+            Toast.makeText(getApplicationContext(), "¡Cuenta de usuario eliminada con éxito!", Toast.LENGTH_LONG).show();
+        }
         etPassword.setText(""); //Limpiar campo contraseña
         sessionUserData = null; //Limpiar datos de sesion anterior
     }

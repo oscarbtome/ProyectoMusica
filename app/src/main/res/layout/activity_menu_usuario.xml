@@ -55,12 +55,12 @@
         android:orientation="horizontal"></LinearLayout>
 
     <Button
-        android:id="@+id/btnMisCanciones"
+        android:id="@+id/btnEliminarCancion"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/button_rounded"
-        android:onClick="listaPropia"
-        android:text="Mis Canciones" />
+        android:onClick="eliminar"
+        android:text="Eliminar Cancion" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -72,7 +72,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/button_rounded"
-        android:onClick="listaGeneral"
+        android:onClick="lista"
         android:text="Lista de Canciones" />
 
     <LinearLayout
@@ -85,6 +85,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/button_rounded"
+        android:onClick="modificarPassword"
         android:text="Modificar Contraseña" />
 
     <LinearLayout
@@ -97,5 +98,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/button_rounded"
+        android:onClick="eliminarUsuario"
         android:text="Borrar Usuario" />
 </LinearLayout>

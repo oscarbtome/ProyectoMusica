@@ -15,15 +15,38 @@ class consultas
     }
 	
 	
+	private function getRol($username){
+		try {
+			$consulta = "SELECT rol FROM roles NATURAL JOIN usuarios WHERE nombreUsuario LIKE '{$username}'";
+			// Preparar sentencia
+			$comando = Database::getInstance()->getDb()->prepare($consulta);
+			// Ejecutar sentencia preparada
+			$comando->execute();
+
+			$cadenaJSon=  $comando->fetchAll(PDO::FETCH_ASSOC);
+			if (empty($cadenaJSon)) 
+			{
+				return "[Error]: rol invalido.";
+			}
+			else{
+				if($cadenaJSon[0]['rol'] == 'user' || $cadenaJSon[0]['rol'] == 'admin' || $cadenaJSon[0]['rol'] == 'superAdmin'){
+					return "TRUE";
+				}
+				return "[Error]: rol invalido.";
+			}
+		} catch (PDOException $e) {
+			return "[Error]: no se pudo ejecutar la sentencia SQL.";
+		}
+	}
 	
-	private function existeUsuario($username){
+	
+	private function existeUsuario($username){ //Comprobar solo nombre de usuario 
 		try {
 			$consulta = "SELECT nombreUsuario FROM usuarios WHERE nombreUsuario LIKE '{$username}' OR emailUsuario LIKE '{$username}'";
 			// Preparar sentencia
 			$comando = Database::getInstance()->getDb()->prepare($consulta);
 			// Ejecutar sentencia preparada
 			$comando->execute();
-
 			$cadenaJSon=  $comando->fetchAll(PDO::FETCH_ASSOC);
 			if (empty($cadenaJSon)) 
 			{
@@ -33,14 +56,13 @@ class consultas
 				return "[Error]: este usuario ya esta registrado.";
 			}
 		} catch (PDOException $e) {
-			return "[Error]: no se pudo ejecutar la sentencia SQL.";
+			return "[Error]: no se pudo ejecutar la sentencia SQL. ESTA 3";
 		}
 	}
 
 
    
-    function comprobarLogin($username, $password)
-    {
+    function comprobarLogin($username, $password) { //Comprobar login completo
 		if(consultas::comprobarValidezDatos($username) == TRUE && consultas::comprobarValidezDatos($password) == TRUE){
 			try {
 				$consulta = "SELECT nombreUsuario FROM usuarios WHERE (nombreUsuario LIKE '{$username}' OR emailUsuario LIKE '{$username}') AND password LIKE '{$password}'";
@@ -55,9 +77,8 @@ class consultas
 					$resultado = "[Error]: usuario o contraseña incorrectas.";
 				}
 				else{
-					$resultado = "TRUE";
+					$resultado = consultas::getRol($username); //Comprobar rol de usuario y devolver resultado
 				}
-
 			} catch (PDOException $e) {
 				$resultado = "[Error]: no se pudo ejecutar la sentencia SQL.";
 			}
@@ -81,8 +102,16 @@ class consultas
 				$sentencia->execute();
 
 				if($sentencia){
-					$resultado = "TRUE";
-
+					$consulta2 = "INSERT INTO roles (idUsuario, rol) VALUES ((SELECT idUsuario FROM usuarios WHERE nombreUsuario LIKE '{$username}'), 'user')";
+					// Preparar sentencia
+					$sentencia2 = Database::getInstance()->getDb()->prepare($consulta2);
+					$sentencia2->execute();
+					if($sentencia2){
+						$resultado = "TRUE";
+					}
+					else{
+						$resultado = "[Error]: no se pudo realizar la insercción.";
+					}
 				}else{
 					$resultado = "[Error]: no se pudo realizar la insercción.";
 				}
@@ -99,8 +128,6 @@ class consultas
 }
 
 
-
-
 if(isset($_GET["comprobarLogin"])){
     $username = $_GET["nombreUsuario"];
     $password = $_GET["password"];
@@ -115,6 +142,11 @@ else if(isset($_GET["registrarUsuario"])){
     consultas::registrarUsuario($username, $password, $email);
 }
 
+else{
+	$resultado = "[Error]: operacion no permitida.";
+	$lista["datos"] = array(array("resultado" => $resultado));
+	echo json_encode($lista);
+}
 
 ?>
 

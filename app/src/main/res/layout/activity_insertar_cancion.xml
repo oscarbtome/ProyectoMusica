@@ -11,7 +11,7 @@
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
-        android:layout_height="305dp"
+        android:layout_height="310dp"
         app:srcCompat="@drawable/music" />
 
     <EditText
@@ -39,7 +39,7 @@
         android:ems="10"
         android:hint="Duracion"
         android:backgroundTint="@color/colorPrimary"
-        android:inputType="textPersonName" />
+        android:inputType="time" />
 
     <EditText
         android:id="@+id/etEnlace"
@@ -54,7 +54,18 @@
         android:id="@+id/btnInsertar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:layout_marginBottom="20dp"
         android:background="@drawable/button_rounded"
         android:onClick="operacion"
         android:text="INSERTAR CANCIÓN" />
+
+    <Button
+        android:id="@+id/btnVolver"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_rounded"
+        android:onClick="volver"
+        android:text="Volver" />
+
 </LinearLayout>

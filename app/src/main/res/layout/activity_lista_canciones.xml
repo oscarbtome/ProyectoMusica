@@ -8,11 +8,67 @@
     android:orientation="vertical"
     tools:context=".listaCanciones">
 
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        app:srcCompat="@drawable/nwyr" />
+
+    <RadioGroup
+        android:id="@+id/rgOpciones"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/rbPropias"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="Canciones Propias" />
+
+        <RadioButton
+            android:id="@+id/rbTodas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Todas las Canciones" />
+
+        <RadioButton
+            android:id="@+id/rbFiltrar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Filtrar por:" />
+
+        <EditText
+            android:id="@+id/etTituloBusqueda"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Titulo"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/etAutorBusqueda"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Autor"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/etUsuarioBusqueda"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Usuario"
+            android:inputType="textPersonName" />
+    </RadioGroup>
+
     <TextView
         android:id="@+id/tvLCabeceraLista"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Cabecera Lista" />
+        android:text="Cabecera Lista"
+        android:visibility="visible" />
 
     <ListView
         android:id="@+id/lstListaCanciones"
