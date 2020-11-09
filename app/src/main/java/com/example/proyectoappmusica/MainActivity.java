@@ -18,12 +18,16 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.youtube.player.YouTubeBaseActivity;
+import com.google.android.youtube.player.YouTubeInitializationResult;
+import com.google.android.youtube.player.YouTubePlayer;
+import com.google.android.youtube.player.YouTubePlayerView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class MainActivity extends AppCompatActivity implements Response.ErrorListener, Response.Listener<JSONObject> {
+public class MainActivity extends YouTubeBaseActivity implements Response.ErrorListener, Response.Listener<JSONObject> {
 
     private EditText etNombreUsuario;
     private EditText etPassword;
@@ -39,6 +43,9 @@ public class MainActivity extends AppCompatActivity implements Response.ErrorLis
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor sEditor;
     private SessionUserData sessionUserData;
+    private YouTubePlayerView youTubePlayerView;
+    private YouTubePlayer.OnInitializedListener onInitializedListener;
+    private Button button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +67,26 @@ public class MainActivity extends AppCompatActivity implements Response.ErrorLis
             cbUltimoLogin.setChecked(true);
             etNombreUsuario.setText(sharedPreferences.getString("ultimoLoginTexto", ""));
         }
+        button = (Button) findViewById(R.id.btYoutube);
+        youTubePlayerView = (YouTubePlayerView) findViewById(R.id.youtube_view);
+        onInitializedListener = new YouTubePlayer.OnInitializedListener() {
+            @Override
+            public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
+                youTubePlayer.loadVideo("GKpmIIH5ifc&ab_channel=JoseBurkaz");
+            }
+
+            @Override
+            public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult) {
+
+            }
+        };
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                youTubePlayerView.initialize("AIzaSyBVso95agOaTamxuckr9uxpNibofx68Jdk", onInitializedListener);
+            }
+        });
     }
 
 
@@ -120,7 +147,6 @@ public class MainActivity extends AppCompatActivity implements Response.ErrorLis
                     } else {
                         //ACCEDER USUARIO
                         operacion = "ACCEDER";
-                        System.out.println(String.format("http://192.168.0.17/proyectoAndroid/Login.php?comprobarLogin&nombreUsuario=%s&password=%s", etNombreUsuario.getText().toString(), md5Encrypt.generator(etPassword.getText().toString())));
                         addJson(String.format("http://192.168.0.17/proyectoAndroid/Login.php?comprobarLogin&nombreUsuario=%s&password=%s", etNombreUsuario.getText().toString(), md5Encrypt.generator(etPassword.getText().toString())));
                     }
                 } catch (Exception e) {
