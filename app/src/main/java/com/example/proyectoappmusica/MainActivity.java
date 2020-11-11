@@ -27,7 +27,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class MainActivity extends YouTubeBaseActivity implements Response.ErrorListener, Response.Listener<JSONObject> {
+public class MainActivity extends AppCompatActivity implements Response.ErrorListener, Response.Listener<JSONObject> {
 
     private EditText etNombreUsuario;
     private EditText etPassword;
@@ -43,9 +43,6 @@ public class MainActivity extends YouTubeBaseActivity implements Response.ErrorL
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor sEditor;
     private SessionUserData sessionUserData;
-    private YouTubePlayerView youTubePlayerView;
-    private YouTubePlayer.OnInitializedListener onInitializedListener;
-    private Button button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,26 +64,6 @@ public class MainActivity extends YouTubeBaseActivity implements Response.ErrorL
             cbUltimoLogin.setChecked(true);
             etNombreUsuario.setText(sharedPreferences.getString("ultimoLoginTexto", ""));
         }
-        button = (Button) findViewById(R.id.btYoutube);
-        youTubePlayerView = (YouTubePlayerView) findViewById(R.id.youtube_view);
-        onInitializedListener = new YouTubePlayer.OnInitializedListener() {
-            @Override
-            public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
-                youTubePlayer.loadVideo("GKpmIIH5ifc&ab_channel=JoseBurkaz");
-            }
-
-            @Override
-            public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult) {
-
-            }
-        };
-
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                youTubePlayerView.initialize("AIzaSyBVso95agOaTamxuckr9uxpNibofx68Jdk", onInitializedListener);
-            }
-        });
     }
 
 
@@ -147,7 +124,9 @@ public class MainActivity extends YouTubeBaseActivity implements Response.ErrorL
                     } else {
                         //ACCEDER USUARIO
                         operacion = "ACCEDER";
-                        addJson(String.format("http://192.168.0.17/proyectoAndroid/Login.php?comprobarLogin&nombreUsuario=%s&password=%s", etNombreUsuario.getText().toString(), md5Encrypt.generator(etPassword.getText().toString())));
+                        System.out.println(String.format("http://192.168.0.17/proyectoAndroid/Login.php?comprobarLogin&nombreUsuario=%s&password=%s", etNombreUsuario.getText().toString(), md5Encrypt.generator(etPassword.getText().toString())));
+
+                        addJson(String.format("http://192.168.0.17/proyectoAndroid/Login.php?comprobarLogin&nombreUsuario=%s&password=%s&super=null", etNombreUsuario.getText().toString(), md5Encrypt.generator(etPassword.getText().toString())));
                     }
                 } catch (Exception e) {
                     Toast.makeText(getApplicationContext(), "[Error]: no se pudo hasear la contraseña", Toast.LENGTH_LONG).show();

@@ -2,6 +2,7 @@ package com.example.proyectoappmusica;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -15,12 +16,20 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.youtube.player.YouTubeBaseActivity;
+import com.google.android.youtube.player.YouTubeInitializationResult;
+import com.google.android.youtube.player.YouTubePlayer;
+import com.google.android.youtube.player.YouTubePlayerView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class insertarCancion extends AppCompatActivity implements Response.ErrorListener, Response.Listener<JSONObject>{
+public class insertarCancion extends YouTubeBaseActivity implements Response.ErrorListener, Response.Listener<JSONObject>{
+
+    private YouTubePlayerView vwYoutube;
+    private YouTubePlayer.OnInitializedListener onInitializedListener;
+    private Context ctx;
     private EditText etTituloCancion;
     private EditText etAutorCancion;
     private EditText etDuracion;
@@ -29,6 +38,7 @@ public class insertarCancion extends AppCompatActivity implements Response.Error
     private SessionUserData sessionUserData;
     private String operacion;
     private String tituloCancionOld;
+    private Button btnPlayMusic;
     private Button btnOperacion;
     private Button btnVolver;
     private JsonObjectRequest objetoJson;
@@ -39,6 +49,9 @@ public class insertarCancion extends AppCompatActivity implements Response.Error
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_insertar_cancion);
+        vwYoutube = (YouTubePlayerView) findViewById(R.id.vwYoutube);
+        ctx = getApplicationContext();
+        btnPlayMusic = (Button) findViewById(R.id.btnPlay);
         btnOperacion = (Button) findViewById(R.id.btnInsertar);
         btnVolver = (Button) findViewById(R.id.btnVolver);
         etTituloCancion = (EditText)findViewById(R.id.etTituloCancion);
@@ -52,6 +65,7 @@ public class insertarCancion extends AppCompatActivity implements Response.Error
         operacion = intent.getStringExtra("operacion");
         if(operacion.equals("insertar")){
             btnOperacion.setText("INSERTAR CANCIÓN");
+            btnPlayMusic.setVisibility(View.GONE);
         }
         else if(operacion.equals("modificar")){
             btnOperacion.setText("MODIFICAR CANCIÓN");
@@ -65,10 +79,16 @@ public class insertarCancion extends AppCompatActivity implements Response.Error
         }
     }
 
+    public void playMusic(View view){
+        vwYoutube.initialize("AIzaSyBVso95agOaTamxuckr9uxpNibofx68Jdk", onInitializedListener);
+    }
+
+
     public void operacion(View view){
         if(etTituloCancion.getText().toString().trim().length() > 0 && etAutorCancion.getText().toString().trim().length() > 0 && etEnlace.getText().toString().trim().length() > 0 && etDuracion.getText().toString().trim().length() > 0){
             if(operacion.equals("insertar")){
-                addJson(String.format("http://192.168.0.17/proyectoAndroid/Operaciones.php?insertarCancion&nombreUsuario=%s&password=%s&tituloCancion=%s&autorCancion=%s&enlace=%s&duracion=%s", sessionUserData.getUserName(), sessionUserData.getPassword(), etTituloCancion.getText().toString(), etAutorCancion.getText().toString(), etEnlace.getText().toString(), etDuracion.getText().toString()));
+                addJson(String.format("http://192.168.0.17/proyectoAndroid/Operaciones.php?insertarCancion&nombreUsuario=%s&password=%s&tituloCancion=%s&autorCancion=%s&enlace=%s&duracion=%s", sessionUserData.getUserName(), sessionUserData.getPassword(), etTituloCancion.getText().toString(), etAutorCancion.getText().toString(), etEnlace.getText().toString().replaceFirst("https://www.", "").replaceFirst("youtube.com/watch\\?v=", ""), etDuracion.getText().toString()));
+
             }
             else{
                 operacion = "actualizar";
@@ -135,6 +155,19 @@ public class insertarCancion extends AppCompatActivity implements Response.Error
                     etAutorCancion.setText(objetoJson.optString("autorCancion"));
                     etDuracion.setText(objetoJson.optString("duracion"));
                     etEnlace.setText(objetoJson.optString("enlace"));
+                    onInitializedListener = new YouTubePlayer.OnInitializedListener() {
+                        @Override
+                        public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
+                            youTubePlayer.loadVideo(etEnlace.getText().toString());
+                            vwYoutube.initialize("AIzaSyBVso95agOaTamxuckr9uxpNibofx68Jdk", onInitializedListener);
+                            youTubePlayer.play();
+                        }
+
+                        @Override
+                        public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult) {
+                            Toast.makeText(ctx,"[Error]: no se pudo cargar el video de Youtube.", Toast.LENGTH_LONG).show();
+                        }
+                    };
                 }
                 else{
                     String resultado = objetoJson.optString("resultado");
